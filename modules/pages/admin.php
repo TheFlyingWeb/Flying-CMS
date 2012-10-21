@@ -1,12 +1,27 @@
 ﻿<?PHP
+include("../modules/pages/langs/$SiteLanguage.php");
 $View=htmlspecialchars($_GET["view"]);
 if($View==null)
 	{
 		$View="main";
 	};
+	if($View=="sethome")
+		{
+			$PageID=$_GET['id'];
+			$Zapros2=mysql_query('SELECT * FROM fw_pages_set;');
+			$PagesSettings=mysql_fetch_array($Zapros2);
+			echo(mysql_error());
+			$ID_old=$PagesSettings['homepage'];
+			mysql_query('UPDATE fw_pages_set SET homepage = "'.$PageID.'" WHERE homepage = "'.$ID_old.'";');
+			echo(mysql_error());
+			$View="main";
+		};
 if($View=="main")
 	{
 		$Zapros=mysql_query('SELECT * FROM fw_pages;');
+		$Zapros2=mysql_query('SELECT * FROM fw_pages_set;');
+		$PagesSettings=mysql_fetch_array($Zapros2);
+		$HomePageID=$PagesSettings['homepage'];
 		$PageContent.='<a href="?action=module&mod=pages&view=createpage">Создать новую страницу</a>
 <hr><table width="100%" border="0" cellspacing="1" cellpadding="1" bgcolor="#CCCCCC">
   <tr>
@@ -23,15 +38,29 @@ if($View=="main")
 				$Title=$Data['title'];
 				$Date=$Data['date'];
 				$Content=$Data['content'];
-				$HomeFlag=$Data['homeflag'];
+				if($ID==$HomePageID)
+					{
+						$FlagContent='<font color="#00CC99">'.$Module_YES.'</font>';
+					}else
+					{
+						$FlagContent='<font color="#CC3333">'.$Module_NO.'</font>';
+					};
+				//$HomeFlag=$Data['homeflag'];
+				//if($HomeFlag==1)
+					//{
+					//	$FlagContent='<font color="#00CC99">'.$Module_YES.'</font>';
+				//	}else
+				//	{
+				//		$FlagContent='<font color="#CC3333">'.$Module_NO.'</font>';
+				//	};
 				$PageContent.='<tr>
     <td bgcolor="#FFFFFF"style=" padding:4px;"><a href="../#pages/'.$ID.'" target="_blank">'.$ID.'</a></td>
     <td bgcolor="#FFFFFF"style=" padding:4px;">'.$Title.'</td>
     <td bgcolor="#FFFFFF"style=" padding:4px;">&nbsp;</td>
-    <td bgcolor="#FFFFFF"style=" padding:4px;">&nbsp;</td>
+    <td bgcolor="#FFFFFF"style=" padding:4px;">'.$FlagContent.'</td>
     <td bgcolor="#FFFFFF"style=" padding:4px;"><a href="?action=module&mod=pages&view=editpage&id='.$ID.'">Редактировать</a><br>
       Удалить<br>
-      Назначить домашней</td>
+      <a href="?action=module&mod=pages&view=sethome&id='.$ID.'">'.$Module_SetHome.'</a></td>
   </tr>';
 			};
 		$PageContent.='</table>';

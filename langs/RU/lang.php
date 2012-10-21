@@ -18,6 +18,7 @@ $ADMIN_menueditor_create='Создание нового пункта меню';
 $ADMIN_menueditor_text='Текст';
 $ADMIN_menueditor_pageorlink='Страница или ссылка';
 $ADMIN_menueditor_or='или';
+$ADMIN_menueditor_createbutton='Создать новый пункт меню';
 
 
 $ADMIN_version='Версия';

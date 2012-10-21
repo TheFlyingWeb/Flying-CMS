@@ -36,13 +36,13 @@ if($Action=="hellopage")
     <td bgcolor="#FFFFFF" style="padding:15px;">'.$ADMIN_homepage_welcome.'</td>
   </tr>
   <tr>
-    <td bgcolor="#F4F4F4" style="padding:10px;"><strong>'.$ADMIN_sitecontrol.':</strong></td>
+    <td background="../images/admin/window_back.png" bgcolor="#F4F4F4" style="padding:10px;"><strong>'.$ADMIN_sitecontrol.':</strong></td>
   </tr>
   <tr>
     <td bgcolor="#FFFFFF" style="padding:35px;"><div style="width:100px; text-align:center; float:left;"><a href="?action=settings"><img src="../images/admin/settings.png">'.$ADMIN_settings.'</a></div><div style="width:100px; text-align:center; float:left;"><a href="?action=menueditor"><img src="../images/admin/menueditor.png">'.$ADMIN_menueditor.'</a></div></td>
   </tr>
   <tr>
-    <td bgcolor="#F4F4F4" style="padding:10px;"><strong>'.$ADMIN_modules.':</strong></td>
+    <td background="../images/admin/window_back.png" bgcolor="#F4F4F4" style="padding:10px;"><strong>'.$ADMIN_modules.':</strong></td>
   </tr>
   <tr>
     <td bgcolor="#FFFFFF" style="padding:35px;"><div id="modulesList"></div></td>
@@ -66,9 +66,35 @@ if($Action=="module")
 		$Mod=htmlspecialchars($_GET["mod"]);
 		include("../modules/$Mod/admin.php");
 	};
-
+if($Action=="menueditor_create")
+	{
+		$LinkText=$_POST["text"];
+		$Page=$_POST["page"];
+		if($Page=="outside")
+			{
+				$Link=$_POST["url"];
+				$Type='outside';
+			}else
+			{
+				$Link=$Page;
+				$Type='inside';
+			};
+		mysql_query('INSERT INTO fw_mainmenu VALUES ("","'.$LinkText.'","'.$Type.'","'.$Link.'","0","_self");');
+		$PageContent='';
+		$InHead='';
+		$Action='menueditor';
+	};
 if($Action=="menueditor")
 	{
+		$Query=mysql_query('SELECT * FROM fw_pages');
+		$OptionSet='<option value="outside"> - - -</option>';
+		while($Data=mysql_fetch_array($Query))
+			{
+				$PageID=$Data['id'];
+				$PageLink="#pages/$PageID";
+				$PageTitle=$Data['title'];
+				$OptionSet.='<option value="'.$PageLink.'">'.$PageTitle.'</option>';
+			};
 		$PageContent='<table width="100%" border="0" cellspacing="1" cellpadding="1" bgcolor="#CCCCCC">
   <tr>
     <td bgcolor="#FFFFFF" style="padding:15px;">'.$ADMIN_menueditor_welcome.'</td>
@@ -83,7 +109,7 @@ if($Action=="menueditor")
     <td bgcolor="#F4F4F4" style="padding:10px;"><strong>'.$ADMIN_menueditor_create.':</strong></td>
   </tr>
   <tr>
-    <td bgcolor="#FFFFFF" style="padding:35px;"><form name="form1" method="post" action="">
+    <td bgcolor="#FFFFFF" style="padding:35px;"><form name="form1" method="post" action="?action=menueditor_create">
       <table width="100%" border="0" cellspacing="1" cellpadding="1">
         <tr>
           <td width="32%">'.$ADMIN_menueditor_text.'</td>
@@ -95,7 +121,7 @@ if($Action=="menueditor")
           </label></td>
           <td width="27%"><label for="page"></label>
             <select name="page" id="page" style="width:100%">
-              <option value="aboutproject">О проекте</option>
+              '.$OptionSet.'
             </select></td>
           <td width="8%" style="text-align:center;"> '.$ADMIN_menueditor_or.'</td>
           <td width="33%">http://
@@ -103,6 +129,7 @@ if($Action=="menueditor")
             <input type="text" name="url" id="url" style="width:60%;"></td>
         </tr>
       </table>
+	  <center><input type="submit" value="'.$ADMIN_menueditor_createbutton.'" style="width:90%; height:45px;"> </center>
     </form></td>
   </tr>
 </table>';

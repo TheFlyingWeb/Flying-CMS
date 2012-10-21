@@ -2,7 +2,11 @@
 $PageID=trim($Query[1]);
 if($PageID==null)
 	{
-		$PageID='index';
+		$Zapros2=mysql_query('SELECT * FROM fw_pages_set;');
+		$PagesSettings=mysql_fetch_array($Zapros2);
+		$HomePageID=$PagesSettings['homepage'];
+		
+		$PageID=$HomePageID;
 		
 	};
 
